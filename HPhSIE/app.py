@@ -29,15 +29,7 @@ REGISTRY = {
     "E": {"name": "Energy Deposited", "unit": "J"},
     "X_dot": {"name": "Exposure Rate", "unit": "R/h"},
     "Gamma": {"name": "Specific Gamma Ray Const.", "unit": "R·cm^2/mCi·h"},
-    "K": {"name": "Kerma", "unit": "Gy"},
-    "Etr": {"name": "Kinetic Energy Transferred", "unit": "J"},
-    "E_pot": {"name": "Membrane Potential", "unit": "V"},
-    "R": {"name": "Gas Constant", "unit": "J/mol·K"},
-    "T_temp": {"name": "Temperature", "unit": "K"},
-    "z": {"name": "Valence", "unit": "dim"},
-    "F": {"name": "Faraday Constant", "unit": "C/mol"},
-    "C_out": {"name": "Concentration Out", "unit": "mM"},
-    "C_in": {"name": "Concentration In", "unit": "mM"}
+
 }
 
 # ==========================================
@@ -100,20 +92,6 @@ EQUATIONS = [
         "latex": r"\dot{X} = \frac{\Gamma A}{d^2}",
         "vars": {"X_dot", "Gamma", "A", "d1"}, # Reused d1 for distance
         "func": lambda v: v['X_dot'] - ((v['Gamma'] * v['A']) / v['d1']**2)
-    },
-    {
-        "id": "kerma",
-        "name": "Kerma",
-        "latex": r"K = \frac{E_{tr}}{m}",
-        "vars": {"K", "Etr", "m"},
-        "func": lambda v: v['K'] - (v['Etr'] / v['m'])
-    },
-    {
-        "id": "nernst",
-        "name": "Nernst Equation",
-        "latex": r"E = \frac{RT}{zF} \ln\left(\frac{C_{out}}{C_{in}}\right)",
-        "vars": {"E_pot", "R", "T_temp", "z", "F", "C_out", "C_in"},
-        "func": lambda v: v['E_pot'] - ((v['R']*v['T_temp'])/(v['z']*v['F']) * np.log(v['C_out']/v['C_in']))
     }
 ]
 
