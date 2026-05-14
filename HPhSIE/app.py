@@ -135,16 +135,37 @@ def validate_physics(knowns, unknown_key, result):
     return warnings
 
 def solve_numerical(eq, knowns, unknown_key):
-    """Wraps fsolve to find the missing variable."""
     def objective(x):
         test_vars = knowns.copy()
-        test_vars[unknown_key] = x[0]
+        # Use abs(x) to keep the solver in physical bounds (no negative mass/time)
+        test_vars[unknown_key] = abs(x[0]) 
         return eq['func'](test_vars)
+
+    # List of orders of magnitude to try as a starting point
+    # This prevents getting stuck at 1.0
+    trial_guesses = [1e-9, 1e-6, 1e-3, 0.1, 1.0, 10.0, 100.0, 1e4, 1e7]
     
-    # Simple initial guess of 1.0 (Can be improved with physical heuristics)
-    initial_guess = [1.0]
-    result = fsolve(objective, initial_guess)[0]
-    return result
+    best_guess = 1.0
+    min_error = float('inf')
+
+    # Preliminary "Scan" to find a valid starting neighborhood
+    for guess in trial_guesses:
+        try:
+            error = abs(objective([guess]))
+            if error < min_error:
+                min_error = error
+                best_guess = guess
+        except:
+            continue
+
+    # Final Solve with the best starting point found
+    result, info, ier, msg = fsolve(objective, [best_guess], full_output=True)
+    
+    if ier != 1:
+        # Fallback: if fsolve fails, return the best we found during the scan
+        return best_guess
+        
+    return abs(result[0])
 
 # ==========================================
 # 4. STREAMLIT UI & INFERENCE ENGINE
