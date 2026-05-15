@@ -27,7 +27,8 @@ def get_ai_insight(eq_name, inputs, result):
         "the numerical correctness of the math provided. Assume the math is 100% correct. "
         "Strictly avoid phrases like 'however', 'but', or implying the calculation is wrong. "
         "Keep your response strictly under 3 sentences, encouraging and clear. The last sentence"
-        "should be a fun fact about the result's context"
+        "should be a fun fact about the result's context. Curate the responses' context according to"
+        "ICRP and IAEA".
     )
     
     user_prompt = (
