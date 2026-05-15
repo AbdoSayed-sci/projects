@@ -17,20 +17,32 @@ client = Groq(api_key=api_key)
 
 # 3. Example of calling Llama 3 in your calculation function
 def get_ai_insight(eq_name, inputs, result):
+    # Use the 8B model for higher free traffic limits
+    model_choice = "llama-3.1-8b-instant" 
+    
+    # Secure your system prompt against argumentative behavior
+    system_prompt = (
+        "You are a supportive, grounded Health Biophysics academic peer simulator. "
+        "Your job is to provide context for calculated values, NOT to audit or contest "
+        "the numerical correctness of the math provided. Assume the math is 100% correct. "
+        "Strictly avoid phrases like 'however', 'but', or implying the calculation is wrong. "
+        "Keep your response strictly under 2 sentences, encouraging and clear."
+    )
+    
+    user_prompt = (
+        f"The user used the {eq_name} equation with inputs {inputs} and successfully "
+        f"derived a final result of {result}. Provide a brief, practical, real-world "
+        f"comparison or clinical context for what this metric represents."
+    )
+
     try:
         completion = client.chat.completions.create(
-            model="llama-3.1-8b-instant",  # Fast and excellent for physics explanations
+            model=model_choice,
             messages=[
-                {
-                    "role": "system",
-                    "content": "You are an expert Health Biophysicist peer coaching a student."
-                },
-                {
-                    "role": "user",
-                    "content": f"The student used the {eq_name} equation with inputs {inputs} and calculated {result}. In two brief sentences, give a physical or biological reality check of this result."
-                }
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
             ],
-            temperature=0.7
+            temperature=0.6 # Lower temperature makes the AI less erratic and more objective
         )
         return completion.choices[0].message.content
     except Exception as e:
