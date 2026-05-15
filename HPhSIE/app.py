@@ -234,6 +234,9 @@ for i in range(st.session_state.row_count):
 
 st.divider()
 
+if "ai_insight" not in st.session_state:
+    st.session_state.ai_insight = ""
+
 if st.button("🔬 Analyze & Solve", type="primary"):
     selected_vars = set(user_inputs.keys())
     
@@ -298,6 +301,12 @@ if st.button("🔬 Analyze & Solve", type="primary"):
         st.success(f"### ✅ Identified: {eq['name']}")
         st.latex(eq['latex'])
         
+    with st.spinner("🧠 Consulting the Socratic Peer..."):
+        st.session_state.ai_insight = get_ai_insight(
+            eq['name'], 
+            knowns, 
+            f"{result:.4g} {REGISTRY[unknown_key]['unit']}"
+        )    
         try:
             result = solve_numerical(eq, knowns, unknown_key)
             
@@ -311,24 +320,9 @@ if st.button("🔬 Analyze & Solve", type="primary"):
             
         except Exception as e:
             st.error(f"Numerical Solver Failed: {e}")
-# Create a designated slot in session state for the insight
-if "ai_insight" not in st.session_state:
-    st.session_state.ai_insight = ""
-
-if st.button("🔬 Analyze & Solve", type="primary"):
-    # ... your existing solver logic ...
-    # calculation_result = result
-    
-    # 1. Call Groq and save it straight to session state
-    with st.spinner("🧠 Consulting the Socratic Peer..."):
-        st.session_state.ai_insight = get_ai_insight(
-            eq['name'], 
-            knowns, 
-            f"{result:.4g} {REGISTRY[unknown_key]['unit']}"
-        )
-
-# 2. Render the sentence OUTSIDE the button click loop
 if st.session_state.ai_insight:
     st.markdown("---")
     st.markdown("### 💬 Socratic Peer Insight")
     st.info(st.session_state.ai_insight)
+
+
