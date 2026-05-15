@@ -260,7 +260,13 @@ st.divider()
 if "ai_insight" not in st.session_state:
     st.session_state.ai_insight = ""
 
-if st.button("🔬 Analyze & Solve", type="primary"):
+with col_solve: 
+    analyze_clicked = st.button("🔬 Analyze & Solve", type="primary")
+    
+with col_clear:
+    st.button(" 🧹 Clear All Inputs", on_click=reset_engine)
+
+if analyze_clicked:
     selected_vars = set(user_inputs.keys())
     
     if not selected_vars:
