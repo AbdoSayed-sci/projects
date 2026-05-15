@@ -1,0 +1,19 @@
+# --- Security ---
+.streamlit/secrets.toml
+
+# --- Python Junk ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+
+# --- Data Science Junk ---
+.ipynb_checkpoints/
+*.csv
+*.xlsx
+# (Keep data files ignored if they are large or private)
+
+# --- OS Junk ---
+.DS_Store
+Thumbs.db
