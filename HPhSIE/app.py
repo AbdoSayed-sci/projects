@@ -300,13 +300,7 @@ if st.button("🔬 Analyze & Solve", type="primary"):
         eq = matches[0]
         st.success(f"### ✅ Identified: {eq['name']}")
         st.latex(eq['latex'])
-        
-        with st.spinner("🧠 Consulting the Socratic Peer..."):
-            st.session_state.ai_insight = get_ai_insight(
-                eq['name'], 
-                knowns, 
-                f"{result:.4g} {REGISTRY[unknown_key]['unit']}"
-            )    
+         
         try:
             result = solve_numerical(eq, knowns, unknown_key)
             
@@ -317,6 +311,13 @@ if st.button("🔬 Analyze & Solve", type="primary"):
                 
             st.markdown(f"### **Solved Result:**")
             st.markdown(f"**{REGISTRY[unknown_key]['name']} ({unknown_key})** = `{result:.4g}` {REGISTRY[unknown_key]['unit']}")
+
+            with st.spinner("🧠 Consulting the Socratic Peer..."):
+            st.session_state.ai_insight = get_ai_insight(
+                eq['name'], 
+                knowns, 
+                f"{result:.4g} {REGISTRY[unknown_key]['unit']}"
+            )   
             
         except Exception as e:
             st.error(f"Numerical Solver Failed: {e}")
