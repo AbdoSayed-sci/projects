@@ -35,7 +35,7 @@ def generate_pdf_report(eq_name, latex_formula, knowns, result, unit, unknown_ke
     pdf.cell(0, 10, "Input Parameters:", ln=True)
     pdf.set_font("Helvetica", "", 11)
     for k, v in knowns.items():
-        pdf.cell(0, 7, f" • Given Variable ({k}): {v}", ln=True)
+        pdf.cell(0, 7, f" - Given Variable ({k}): {v}", ln=True)
     pdf.ln(5)
     
     # --- Solved Result Section ---
