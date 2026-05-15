@@ -1,7 +1,40 @@
 import streamlit as st
 import numpy as np
 from scipy.optimize import fsolve
+from groq import Groq
+# ==========================================
+# integrate the chatbot
+# ==========================================
+# 1. Safely pull the key from Streamlit's secrets vault
+try:
+    api_key = st.secrets["GROQ_API_KEY"]
+except KeyError:
+    st.error("Missing Groq API Key! Please configure GROQ_API_KEY in Streamlit Secrets.")
+    st.stop()
 
+# 2. Initialize the Groq client with the secret key
+client = Groq(api_key=api_key)
+
+# 3. Example of calling Llama 3 in your calculation function
+def get_ai_insight(eq_name, inputs, result):
+    try:
+        completion = client.chat.completions.create(
+            model="llama3-8b-8192",  # Fast and excellent for physics explanations
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are an expert Health Biophysicist peer coaching a student."
+                },
+                {
+                    "role": "user",
+                    "content": f"The student used the {eq_name} equation with inputs {inputs} and calculated {result}. In two brief sentences, give a physical or biological reality check of this result."
+                }
+            ],
+            temperature=0.7
+        )
+        return completion.choices[0].message.content
+    except Exception as e:
+        return f"Could not generate AI insight: {e}"
 # ==========================================
 # 1. VARIABLE REGISTRY
 # ==========================================
