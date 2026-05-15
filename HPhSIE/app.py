@@ -425,7 +425,7 @@ if analyze_clicked:
                 result=result,
                 unit=REGISTRY[unknown_key]['unit'],
                 unknown_key=unknown_key,
-                ai_insight="ai_insight" # Passes the AI sentence we generated earlier
+                ai_insight=st.session_state.ai_insight # Passes the AI sentence we generated earlier
             )
             
             st.download_button(
