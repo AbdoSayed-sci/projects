@@ -313,11 +313,11 @@ if st.button("🔬 Analyze & Solve", type="primary"):
             st.markdown(f"**{REGISTRY[unknown_key]['name']} ({unknown_key})** = `{result:.4g}` {REGISTRY[unknown_key]['unit']}")
 
             with st.spinner("🧠 Consulting the Socratic Peer..."):
-            st.session_state.ai_insight = get_ai_insight(
-                eq['name'], 
-                knowns, 
-                f"{result:.4g} {REGISTRY[unknown_key]['unit']}"
-            )   
+                st.session_state.ai_insight = get_ai_insight(
+                    eq['name'], 
+                    knowns, 
+                    f"{result:.4g} {REGISTRY[unknown_key]['unit']}"
+                )   
             
         except Exception as e:
             st.error(f"Numerical Solver Failed: {e}")
