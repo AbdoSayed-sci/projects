@@ -55,7 +55,7 @@ def get_ai_insight(eq_name, inputs, result):
 def reset_engine():
     for key in list(st.session_state.keys()):
         if key != "row_count":
-            del st.session_state[key]
+            st.session_state[key] = ""
 
 # ==========================================
 # 1. VARIABLE REGISTRY
