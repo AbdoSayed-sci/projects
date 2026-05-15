@@ -256,6 +256,8 @@ for i in range(st.session_state.row_count):
 
 st.divider()
 
+col_solve, col_clear = st.columns([1,1])
+
 if "ai_insight" not in st.session_state:
     st.session_state.ai_insight = ""
 
