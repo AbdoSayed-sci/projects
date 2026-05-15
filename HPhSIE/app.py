@@ -2,6 +2,71 @@ import streamlit as st
 import numpy as np
 from scipy.optimize import fsolve
 from groq import Groq
+from fpdf import FPDF
+import io
+
+# ==========================================
+# export into pdf button
+# ==========================================
+
+def generate_pdf_report(eq_name, latex_formula, knowns, result, unit, unknown_key, ai_insight=None):
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # --- Header Banner ---
+    pdf.set_fill_color(26, 54, 93) # Dark Medical Blue
+    pdf.rect(0, 0, 210, 30, 'F')
+    
+    pdf.set_font("Helvetica", "B", 16)
+    pdf.set_text_color(255, 255, 255)
+    pdf.cell(0, 10, "SOCRATIC INFERENCE ENGINE - REPORT", ln=True, align="C")
+    pdf.ln(12)
+    
+    # --- Document Body ---
+    pdf.set_text_color(0, 0, 0)
+    pdf.set_font("Helvetica", "B", 14)
+    pdf.cell(0, 10, f"Physical Law: {eq_name}", ln=True)
+    pdf.set_font("Helvetica", "I", 11)
+    pdf.cell(0, 8, f"Formula Reference: {latex_formula}", ln=True)
+    pdf.ln(5)
+    
+    # --- Data Table ---
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(0, 10, "Input Parameters:", ln=True)
+    pdf.set_font("Helvetica", "", 11)
+    for k, v in knowns.items():
+        pdf.cell(0, 7, f" • Given Variable ({k}): {v}", ln=True)
+    pdf.ln(5)
+    
+    # --- Solved Result Section ---
+    pdf.set_fill_color(240, 244, 248) # Soft background gray/blue
+    pdf.rect(10, pdf.get_y(), 190, 18, 'F')
+    
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.set_text_color(26, 54, 93)
+    pdf.cell(0, 10, f"  CALCULATED RESULT:", ln=True)
+    pdf.set_font("Helvetica", "B", 11)
+    pdf.set_text_color(0, 0, 0)
+    pdf.cell(0, 2, f"  {unknown_key} = {result:.4g} {unit}", ln=True)
+    pdf.ln(12)
+    
+    # --- Socratic AI Insight ---
+    if ai_insight:
+        pdf.set_font("Helvetica", "B", 12)
+        pdf.cell(0, 10, "Professor's Biophysics Insight:", ln=True)
+        pdf.set_font("Helvetica", "I", 10)
+        # multi_cell automatically wraps text so it doesn't go off the page
+        pdf.multi_cell(0, 6, ai_insight)
+        
+    # --- Footer ---
+    pdf.set_y(-20)
+    pdf.set_font("Helvetica", "", 8)
+    pdf.set_text_color(128, 128, 128)
+    pdf.cell(0, 10, "Generated automatically via BioPhysSolve Inference Engine. For educational use only.", align="C")
+    
+    # Output the PDF as bytes to string buffer
+    return pdf.output()
+    
 # ==========================================
 # integrate the chatbot
 # ==========================================
@@ -348,7 +413,27 @@ if analyze_clicked:
                     knowns, 
                     f"{result:.4g} {REGISTRY[unknown_key]['unit']}"
                 )   
+            # --- NEW: GENERATE & DOWNLOAD PDF ---
+            st.divider()
+            st.markdown("#### 📄 Need this for a lab report?")
             
+            # Build the PDF on the fly using bytes
+            pdf_bytes = generate_pdf_report(
+                eq_name=eq['name'],
+                latex_formula=eq['latex'],
+                knowns=knowns,
+                result=result,
+                unit=REGISTRY[unknown_key]['unit'],
+                unknown_key=unknown_key,
+                ai_insight=interpretation # Passes the AI sentence we generated earlier
+            )
+            
+            st.download_button(
+                label="📥 Download Official Lab PDF",
+                data=bytes(pdf_bytes),
+                file_name=f"Biophysics_Report_{eq['id']}.pdf",
+                mime="application/pdf"
+            )
         except Exception as e:
             st.error(f"Numerical Solver Failed: {e}")
 if st.session_state.ai_insight:
