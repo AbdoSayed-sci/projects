@@ -26,7 +26,8 @@ def get_ai_insight(eq_name, inputs, result):
         "Your job is to provide context for calculated values, NOT to audit or contest "
         "the numerical correctness of the math provided. Assume the math is 100% correct. "
         "Strictly avoid phrases like 'however', 'but', or implying the calculation is wrong. "
-        "Keep your response strictly under 2 sentences, encouraging and clear."
+        "Keep your response strictly under 3 sentences, encouraging and clear. The last sentence"
+        "should be a fun fact about the result's context"
     )
     
     user_prompt = (
